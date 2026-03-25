@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code Security Awareness</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --surface: #0f172a;
+      --surface-2: #0b1222;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: rgba(255, 255, 255, 0.10);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --accent: #fbbf24;
+      --danger: #ef4444;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── CAUTION STRIPE HEADER ── */
+    .caution-bar {
+      height: 10px;
+      background: linear-gradient(90deg, rgba(251,191,36,0.7), rgba(251,191,36,0.1));
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      padding: 60px 24px 40px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '⚠';
+      position: absolute;
+      font-size: 420px;
+      opacity: 0.04;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .tag-pill {
+      display: inline-block;
+      background: rgba(251, 191, 36, 0.16);
+      border: 1px solid rgba(251, 191, 36, 0.22);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 10vw, 110px);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 span { color: var(--text); }
+
+    .hero p.subtitle {
+      max-width: 560px;
+      margin: 0 auto 32px;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .scroll-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      color: rgba(229, 231, 235, 0.45);
+      margin-top: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .scroll-hint::before,
+    .scroll-hint::after {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    /* ── CONTAINER ── */
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── SECTION LABELS ── */
+    .section-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(251, 191, 36, 0.92);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* ── SURVEY CARD ── */
+    .survey-card {
+      background: linear-gradient(180deg, var(--surface), var(--surface-2));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-bottom: 48px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .survey-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 5px; height: 100%;
+      background: var(--accent);
+    }
+
+    .survey-card h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .survey-card .card-desc {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    /* ── QUESTIONS ── */
+    .question {
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    }
+
+    .question:last-of-type {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .question-num {
+      font-size: 11px;
+      color: rgba(251, 191, 36, 0.92);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+
+    .question p {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .option:hover {
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .option input[type="radio"],
+    .option input[type="checkbox"] {
+      accent-color: var(--accent);
+      margin-top: 2px;
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .option label {
+      font-size: 14px;
+      color: rgba(229, 231, 235, 0.86);
+      cursor: pointer;
+      line-height: 1.5;
+    }
+
+    .option.selected {
+      border-color: rgba(251, 191, 36, 0.42);
+      background: rgba(251, 191, 36, 0.08);
+    }
+
+    /* ── SUBMIT BUTTON ── */
+    .btn-submit {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      background: var(--accent);
+      color: #0b0f14;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.1em;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 32px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 40px rgba(251, 191, 36, 0.18);
+    }
+
+    .btn-submit:active { transform: translateY(0); }
+
+    /* ── RESULTS PANEL ── */
+    #results-panel {
+      display: none;
+      background: linear-gradient(180deg, var(--surface), var(--surface-2));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-bottom: 48px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    #results-panel h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    #score-display {
+      font-size: 72px;
+      font-family: 'Bebas Neue', sans-serif;
+      line-height: 1;
+      margin: 16px 0;
+    }
+
+    #score-message {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto 24px;
+    }
+
+    .answer-review { margin-top: 28px; text-align: left; }
+
+    .answer-item {
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .answer-item.correct { background: rgba(0,200,100,0.1); border-left: 3px solid #00C864; }
+    .answer-item.incorrect { background: rgba(239,68,68,0.10); border-left: 3px solid var(--danger); }
+    .answer-item .q-text { font-weight: 600; margin-bottom: 4px; color: rgba(229, 231, 235, 0.92); }
+    .answer-item .a-text { color: rgba(229, 231, 235, 0.70); }
+    .answer-item .correct-text { color: #00C864; font-size: 13px; margin-top: 4px; }
+
+    /* ── LIVE DEMO ── */
+    .demo-card {
+      background: linear-gradient(180deg, var(--surface), var(--surface-2));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      margin-bottom: 48px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .demo-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 5px; height: 100%;
+      background: var(--danger);
+    }
+
+    .demo-card h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .demo-card p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 18px;
+      line-height: 1.65;
+    }
+
+    .demo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 18px;
+    }
+
+    .consent {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .consent input {
+      margin-top: 3px;
+      accent-color: var(--danger);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .consent label {
+      font-size: 13px;
+      line-height: 1.5;
+      color: rgba(229, 231, 235, 0.82);
+    }
+
+    .btn-demo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+      background: var(--danger);
+      color: #fff;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.06em;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
+      box-shadow: 0 14px 40px rgba(239, 68, 68, 0.18);
+      white-space: nowrap;
+    }
+
+    .btn-demo:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-demo:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn-demo:active:not(:disabled) { transform: translateY(0); }
+
+    #download-status {
+      display: none;
+      margin-top: 18px;
+    }
+
+    #download-status p {
+      font-size: 13px;
+      color: rgba(229, 231, 235, 0.70);
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-wrap {
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 999px;
+      height: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.9), rgba(239, 68, 68, 0.35));
+      width: 0%;
+      transition: width 0.35s ease;
+    }
+
+    #reveal-box {
+      display: none;
+      margin-top: 18px;
+      padding: 18px 18px;
+      border: 1px solid rgba(251, 191, 36, 0.26);
+      background: rgba(251, 191, 36, 0.06);
+      border-radius: var(--radius);
+    }
+
+    #reveal-box h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    #reveal-box p {
+      font-size: 14px;
+      color: rgba(229, 231, 235, 0.78);
+      line-height: 1.7;
+      margin-bottom: 0;
+    }
+
+    #reveal-box ul {
+      padding-left: 20px;
+      margin-top: 10px;
+    }
+
+    #reveal-box ul li {
+      font-size: 13px;
+      color: rgba(229, 231, 235, 0.66);
+      margin-bottom: 6px;
+      line-height: 1.6;
+    }
+
+    /* ── TIPS GRID ── */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .tip-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+
+    .tip-card:hover { border-color: rgba(251, 191, 36, 0.28); }
+
+    .tip-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .tip-card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .tip-card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── QR SECTION ── */
+    .qr-section {
+      background: linear-gradient(180deg, var(--surface), var(--surface-2));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow);
+    }
+
+    #qrcode-container {
+      background: #fff;
+      padding: 12px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .qr-text h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .qr-text p {
+      font-size: 14px;
+      color: #777;
+      line-height: 1.6;
+      max-width: 360px;
+    }
+
+    .qr-url-input {
+      margin-top: 14px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .qr-url-input input {
+      flex: 1;
+      min-width: 200px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: rgba(229, 231, 235, 0.92);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      outline: none;
+    }
+
+    .qr-url-input input:focus { border-color: rgba(251, 191, 36, 0.35); }
+
+    .qr-url-input button {
+      background: var(--accent);
+      color: #0b0f14;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 0.05em;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: rgba(229, 231, 235, 0.45);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* ── TRANSITIONS ── */
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="caution-bar"></div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="tag-pill">⚠ Cybersecurity Awareness</div>
+    <h1>Don't<br/><span>Scan</span><br/>Blindly.</h1>
+    <p class="subtitle">
+      QR codes are everywhere — but so are the people who abuse them.
+      Take our quick survey to test your knowledge, then experience a live demonstration of what a malicious QR code can trigger.
+    </p>
+    <div class="scroll-hint">Take the quiz below</div>
+  </div>
+
+  <div class="container">
+
+    <!-- SECTION: SURVEY -->
+    <div class="section-label">// 01 — Knowledge Check</div>
+
+    <div class="survey-card" id="survey-form">
+      <h2>QR Code Security Survey</h2>
+      <p class="card-desc">Answer the 5 questions below. Your answers are not recorded — this is for your own learning.</p>
+
+      <!-- Q1 -->
+      <div class="question">
+        <div class="question-num">Question 01 / 05</div>
+        <p>What does "QR" stand for in QR Code?</p>
+        <div class="options" data-question="q1" data-answer="b">
+          <div class="option" onclick="selectOption(this, 'q1', 'a')"><input type="radio" name="q1" value="a" /><label>Quick Retrieval</label></div>
+          <div class="option" onclick="selectOption(this, 'q1', 'b')"><input type="radio" name="q1" value="b" /><label>Quick Response</label></div>
+          <div class="option" onclick="selectOption(this, 'q1', 'c')"><input type="radio" name="q1" value="c" /><label>Queue Redirector</label></div>
+          <div class="option" onclick="selectOption(this, 'q1', 'd')"><input type="radio" name="q1" value="d" /><label>Quantum Reader</label></div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="question">
+        <div class="question-num">Question 02 / 05</div>
+        <p>A QR code in a restaurant replaces the menu. What should you check before scanning it?</p>
+        <div class="options" data-question="q2" data-answer="c">
+          <div class="option" onclick="selectOption(this, 'q2', 'a')"><input type="radio" name="q2" value="a" /><label>Nothing — QR codes are always safe.</label></div>
+          <div class="option" onclick="selectOption(this, 'q2', 'b')"><input type="radio" name="q2" value="b" /><label>Whether the code looks high quality.</label></div>
+          <div class="option" onclick="selectOption(this, 'q2', 'c')"><input type="radio" name="q2" value="c" /><label>Whether a sticker has been placed over the original code, and preview the URL before opening it.</label></div>
+          <div class="option" onclick="selectOption(this, 'q2', 'd')"><input type="radio" name="q2" value="d" /><label>Whether your phone's battery is charged.</label></div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="question">
+        <div class="question-num">Question 03 / 05</div>
+        <p>Which of the following is a known QR code attack technique?</p>
+        <div class="options" data-question="q3" data-answer="b">
+          <div class="option" onclick="selectOption(this, 'q3', 'a')"><input type="radio" name="q3" value="a" /><label>QR Spoofing requires a hardware device.</label></div>
+          <div class="option" onclick="selectOption(this, 'q3', 'b')"><input type="radio" name="q3" value="b" /><label>"QRLjacking" — hijacking accounts that use QR-based login by intercepting the code.</label></div>
+          <div class="option" onclick="selectOption(this, 'q3', 'c')"><input type="radio" name="q3" value="c" /><label>QR codes can only cause harm if you type in a password after scanning.</label></div>
+          <div class="option" onclick="selectOption(this, 'q3', 'd')"><input type="radio" name="q3" value="d" /><label>A QR code can only link to a website, nothing else.</label></div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="question">
+        <div class="question-num">Question 04 / 05</div>
+        <p>You receive a text message claiming to be from your bank: "Verify your account by scanning this QR code." What should you do?</p>
+        <div class="options" data-question="q4" data-answer="d">
+          <div class="option" onclick="selectOption(this, 'q4', 'a')"><input type="radio" name="q4" value="a" /><label>Scan it immediately since banks are trustworthy.</label></div>
+          <div class="option" onclick="selectOption(this, 'q4', 'b')"><input type="radio" name="q4" value="b" /><label>Scan it, but only if the message looks professional.</label></div>
+          <div class="option" onclick="selectOption(this, 'q4', 'c')"><input type="radio" name="q4" value="c" /><label>Forward it to a friend to scan first.</label></div>
+          <div class="option" onclick="selectOption(this, 'q4', 'd')"><input type="radio" name="q4" value="d" /><label>Do not scan it. Contact your bank directly via their official website or phone number.</label></div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="question">
+        <div class="question-num">Question 05 / 05</div>
+        <p>What can a malicious QR code potentially do when scanned? (All that apply)</p>
+        <div class="options" data-question="q5" data-answer="abcd" data-multi="true">
+          <div class="option" onclick="selectMultiOption(this, 'q5', 'a')"><input type="checkbox" name="q5" value="a" /><label>Redirect you to a phishing website to steal credentials</label></div>
+          <div class="option" onclick="selectMultiOption(this, 'q5', 'b')"><input type="checkbox" name="q5" value="b" /><label>Trigger an automatic file download to your device</label></div>
+          <div class="option" onclick="selectMultiOption(this, 'q5', 'c')"><input type="checkbox" name="q5" value="c" /><label>Initiate a payment transfer</label></div>
+          <div class="option" onclick="selectMultiOption(this, 'q5', 'd')"><input type="checkbox" name="q5" value="d" /><label>Connect your phone to a malicious WiFi network</label></div>
+        </div>
+      </div>
+
+      <button class="btn-submit" onclick="submitSurvey()">Submit Answers →</button>
+    </div>
+
+    <!-- RESULTS PANEL -->
+    <div id="results-panel">
+      <div class="section-label">// Results</div>
+      <h2>Your Score</h2>
+      <div id="score-display"></div>
+      <p id="score-message"></p>
+      <div class="answer-review" id="answer-review"></div>
+    </div>
+
+    <!-- SECTION: LIVE DEMONSTRATION -->
+    <div class="section-label">// 02 — Live Demonstration</div>
+
+    <div class="demo-card" id="live-demo">
+      <h2>Experience the risk (by choice)</h2>
+      <p>
+        QR codes can trigger links and downloads that waste bandwidth, fill storage, or worse.
+        This demo intentionally downloads a <strong style="color:#fff">~300MB</strong> file to show how disruptive a “free reward” can be.
+      </p>
+
+      <div class="demo-row">
+        <div class="consent">
+          <input id="demo-consent" type="checkbox" />
+          <label for="demo-consent">
+            I understand this will download approximately <strong style="color:#fff">300MB</strong> to my device.
+          </label>
+        </div>
+
+        <button class="btn-demo" id="demo-download-btn" onclick="startDownload()" disabled>
+          <span aria-hidden="true">⬇</span>
+          DOWNLOAD “SHREK IMAGES” (300MB)
+        </button>
+      </div>
+
+      <div id="download-status">
+        <p id="download-status-text">Preparing download…</p>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div id="reveal-box">
+        <h3>That was the lesson.</h3>
+        <p>
+          Even harmless data can be disruptive at scale. A malicious QR code could just as easily send you to a phishing site,
+          push you toward a scam payment, or download something dangerous.
+        </p>
+        <ul>
+          <li>Preview the URL before opening it.</li>
+          <li>Be suspicious of “free rewards” and urgency prompts.</li>
+          <li>Don’t scan codes from unsolicited texts/emails.</li>
+          <li>Look for tampering (stickers over real codes).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TIPS GRID -->
+    <div class="section-label">// 03 — Stay Safe</div>
+
+    <div class="tips-grid">
+      <div class="tip-card">
+        <span class="tip-icon">🔍</span>
+        <h3>Preview First</h3>
+        <p>Most camera apps show the URL before you open it. Always read it — does the domain look legitimate?</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🏧</span>
+        <h3>Check for Stickers</h3>
+        <p>Criminals place rogue QR stickers over real ones. Look for signs of tampering on parking meters, menus, and flyers.</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">📵</span>
+        <h3>No Urgency = No Scan</h3>
+        <p>Legitimate services don't demand you scan a code immediately or threaten consequences for not scanning.</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🔒</span>
+        <h3>HTTPS Isn't Enough</h3>
+        <p>HTTPS means the connection is encrypted — not that the site is safe. Phishing sites use HTTPS too.</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">🧠</span>
+        <h3>Context Matters</h3>
+        <p>Is a QR code on a random flyer, unsolicited email, or text message? That's a red flag regardless of where it leads.</p>
+      </div>
+      <div class="tip-card">
+        <span class="tip-icon">📲</span>
+        <h3>Use Dedicated Scanners</h3>
+        <p>Some QR scanner apps provide malicious URL detection before you're taken to the page.</p>
+      </div>
+    </div>
+
+    <!-- QR CODE -->
+    <div class="section-label">// 04 — Share This Page</div>
+
+    <div class="qr-section">
+      <div id="qrcode-container">
+        <div id="qrcode"></div>
+      </div>
+      <div class="qr-text">
+        <h2>Share the Awareness</h2>
+        <p>Generate a QR code for this page and share it with colleagues, friends, or students. Enter the URL where you've hosted this page.</p>
+        <div class="qr-url-input">
+          <input type="text" id="qr-url-field" placeholder="https://your-hosted-url.com" value="https://your-hosted-url.com" />
+          <button onclick="regenerateQR()">Generate</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Built for cybersecurity awareness education. No data is collected. &nbsp;·&nbsp; Share freely.
+  </footer>
+
+  <script>
+    // ── SURVEY LOGIC ──
+    const userAnswers = {};
+    const multiAnswers = {};
+    const DOWNLOAD_ON_SUBMIT = false; // Keep submit focused on learning/results
+
+    function selectOption(el, question, value) {
+      document.querySelectorAll(`.options[data-question="${question}"] .option`).forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      el.querySelector('input').checked = true;
+      userAnswers[question] = value;
+    }
+
+    function selectMultiOption(el, question, value) {
+      const cb = el.querySelector('input[type="checkbox"]');
+      cb.checked = !cb.checked;
+      el.classList.toggle('selected', cb.checked);
+      if (!multiAnswers[question]) multiAnswers[question] = new Set();
+      if (cb.checked) multiAnswers[question].add(value);
+      else            multiAnswers[question].delete(value);
+    }
+
+    const questions = [
+      { id: 'q1', text: 'What does "QR" stand for?', answer: 'b', correctText: 'Quick Response', multi: false },
+      { id: 'q2', text: 'QR code replaces a restaurant menu — what to check?', answer: 'c', correctText: 'Check for stickers and preview the URL.', multi: false },
+      { id: 'q3', text: 'Known QR attack technique?', answer: 'b', correctText: 'QRLjacking — hijacking QR-based login flows.', multi: false },
+      { id: 'q4', text: 'Bank text with QR code — what do you do?', answer: 'd', correctText: 'Do NOT scan. Contact your bank directly.', multi: false },
+      { id: 'q5', text: 'What can a malicious QR code do?', answer: 'abcd', correctText: 'All of them — phishing, downloads, payments, WiFi.', multi: true },
+    ];
+
+    function getLabel(qid, val) {
+      const opt = document.querySelector(`.options[data-question="${qid}"] .option input[value="${val}"]`);
+      return opt ? opt.parentElement.querySelector('label').textContent : val;
+    }
+
+    function downloadTextFile(filename, text, mime = 'application/json;charset=utf-8') {
+      const blob = new Blob([text], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function initDemoConsent() {
+      const consent = document.getElementById('demo-consent');
+      const btn = document.getElementById('demo-download-btn');
+      if (!consent || !btn) return;
+      const sync = () => { btn.disabled = !consent.checked; };
+      consent.addEventListener('change', sync);
+      sync();
+    }
+
+    function submitSurvey() {
+      let score = 0;
+      let reviewHTML = '<div class="answer-review">';
+
+      questions.forEach(q => {
+        let isCorrect = false;
+        let chosenLabel = '';
+
+        if (q.multi) {
+          const chosen = multiAnswers[q.id] ? [...multiAnswers[q.id]].sort().join('') : '';
+          isCorrect = chosen === q.answer;
+          chosenLabel = chosen ? [...multiAnswers[q.id]].map(v => getLabel(q.id, v)).join(', ') : '(no answer)';
+        } else {
+          const chosen = userAnswers[q.id] || '';
+          isCorrect = chosen === q.answer;
+          chosenLabel = chosen ? getLabel(q.id, chosen) : '(no answer)';
+        }
+
+        if (isCorrect) score++;
+
+        reviewHTML += `<div class="answer-item ${isCorrect ? 'correct' : 'incorrect'}">
+          <div class="q-text">${q.text}</div>
+          <div class="a-text">Your answer: ${chosenLabel}</div>
+          ${!isCorrect ? `<div class="correct-text">✓ Correct: ${q.correctText}</div>` : '<div class="correct-text">✓ Correct!</div>'}
+        </div>`;
+      });
+
+      reviewHTML += '</div>';
+
+      const panel = document.getElementById('results-panel');
+      panel.style.display = 'block';
+      panel.innerHTML = '';
+
+      const msgs = [
+        [0, 1, '🔴 Critical Risk Level', "You're highly vulnerable to QR code attacks. Please review the safety tips below carefully."],
+        [2, 3, '🟡 Moderate Awareness', 'You know some basics, but there are gaps. A single wrong decision can expose you to real harm.'],
+        [4, 4, '🟢 Good — But Stay Sharp', 'Solid knowledge! One question caught you — review the tips and stay vigilant.'],
+        [5, 5, '✅ Expert Level!', 'Excellent! You have strong QR code security awareness. Share this page to educate others.']
+      ];
+
+      const [,, title, msg] = msgs.find(([min, max]) => score >= min && score <= max);
+
+      if (DOWNLOAD_ON_SUBMIT) {
+        const timestamp = new Date().toISOString();
+        const payload = {
+          timestamp,
+          score,
+          total: questions.length,
+          answers: questions.map(q => {
+            if (q.multi) {
+              const chosen = multiAnswers[q.id] ? [...multiAnswers[q.id]].sort() : [];
+              return { id: q.id, question: q.text, chosen, chosenLabels: chosen.map(v => getLabel(q.id, v)) };
+            }
+            const chosen = userAnswers[q.id] || null;
+            return { id: q.id, question: q.text, chosen, chosenLabel: chosen ? getLabel(q.id, chosen) : null };
+          })
+        };
+        downloadTextFile(`qr-awareness-results-${timestamp.replace(/[:.]/g, '-')}.json`, JSON.stringify(payload, null, 2));
+      }
+
+      panel.innerHTML = `
+        <div class="section-label">// Results</div>
+        <h2>${title}</h2>
+        <div id="score-display" style="color:var(--accent)">${score} / 5</div>
+        <p id="score-message">${msg}</p>
+        ${reviewHTML}
+      `;
+      panel.classList.add('fade-in');
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ── LIVE DEMO: LARGE DOWNLOAD ──
+    function startDownload() {
+      const consent = document.getElementById('demo-consent');
+      if (!consent?.checked) return;
+
+      const statusEl = document.getElementById('download-status');
+      const statusText = document.getElementById('download-status-text');
+      const fill = document.getElementById('progress-fill');
+      const revealBox = document.getElementById('reveal-box');
+
+      statusEl.style.display = 'block';
+      revealBox.style.display = 'none';
+      fill.style.width = '0%';
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 9 + 3;
+        if (progress > 100) progress = 100;
+        fill.style.width = progress + '%';
+        const mb = Math.round(progress * 3);
+        statusText.textContent = `Downloading Shrek_Images.zip… ${mb} MB / 300 MB`;
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          statusText.textContent = 'Generating file… (this may take a moment)';
+
+          // Intentionally large file generation to demonstrate impact.
+          // Note: some browsers/devices may struggle with very large blobs.
+          try {
+            const chunk = new Uint8Array(1024 * 1024); // 1MB
+            const parts = new Array(300).fill(chunk);   // ~300MB
+            const blob = new Blob(parts, { type: 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Shrek_Images_300MB_DEMO.bin';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            statusText.textContent = 'Download started. Check your downloads folder.';
+          } catch (e) {
+            statusText.textContent = 'Your browser blocked large file generation. Try on a desktop browser.';
+          }
+
+          setTimeout(() => {
+            revealBox.style.display = 'block';
+            revealBox.classList.add('fade-in');
+            revealBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 700);
+        }
+      }, 140);
+    }
+
+    // ── QR CODE ──
+    let qrInstance = null;
+
+    function generateQR(url) {
+      const container = document.getElementById('qrcode');
+      container.innerHTML = '';
+      qrInstance = new QRCode(container, {
+        text: url,
+        width: 160,
+        height: 160,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    function regenerateQR() {
+      const url = document.getElementById('qr-url-field').value.trim();
+      if (url) generateQR(url);
+    }
+
+    // Init QR with placeholder
+    window.addEventListener('load', () => {
+      generateQR('https://your-hosted-url.com');
+      initDemoConsent();
+    });
+  </script>
+</body>
+</html>
